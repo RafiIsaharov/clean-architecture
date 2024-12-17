@@ -44,23 +44,23 @@ public class CustomerApplicationService {
 
     // boilerplate mapping code TODO move somewhere else
     return CustomerDto.builder()
-        .id(customer.getId())
-        .name(customer.getName())
-        .email(customer.getEmail())
-        .countryId(customer.getCountry().getId())
-        .status(customer.getStatus())
-        .createdDate(customer.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-        .gold(customer.isGoldMember())
+            .id(customer.getId())
+            .name(customer.getName())
+            .email(customer.getEmail())
+            .countryId(customer.getCountry().getId())
+            .status(customer.getStatus())
+            .createdDate(customer.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+            .gold(customer.isGoldMember())
 
-        .shippingAddressStreet(customer.getShippingAddressStreet())
-        .shippingAddressCity(customer.getShippingAddressCity())
-        .shippingAddressZip(customer.getShippingAddressZip())
+            .shippingAddressStreet(customer.getShippingAddress().street())
+            .shippingAddressCity(customer.getShippingAddress().city())
+            .shippingAddressZip(customer.getShippingAddress().zip())
 
-        .canReturnOrders(canReturnOrders)
-        .goldMemberRemovalReason(customer.getGoldMemberRemovalReason())
-        .legalEntityCode(customer.getLegalEntityCode().orElse(null))
-        .discountedVat(customer.isDiscountedVat())
-        .build();
+            .canReturnOrders(canReturnOrders)
+            .goldMemberRemovalReason(customer.getGoldMemberRemovalReason())
+            .legalEntityCode(customer.getLegalEntityCode().orElse(null))
+            .discountedVat(customer.isDiscountedVat())
+            .build();
   }
 
   @Transactional
