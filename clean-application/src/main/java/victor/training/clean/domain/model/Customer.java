@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static lombok.AccessLevel.NONE;
 import static victor.training.clean.domain.model.Customer.Status.DRAFT;
@@ -68,10 +70,11 @@ public class Customer {
   public enum Status {
     DRAFT, VALIDATED, ACTIVE, DELETED;
 
-    public void requireState(Status expected) {
-      if (this != expected) {
-        throw new IllegalStateException("Expected status " + expected );
-      }
+    public void shouldBeOneOf(Status... expected) {
+      Stream.of(expected)
+              .filter(e -> e == this)
+              .findAny()
+              .orElseThrow(() -> new IllegalStateException("Expected status: " + Arrays.toString(expected)));
     }
   }
   @Setter(NONE)
@@ -80,12 +83,12 @@ public class Customer {
   private String validatedBy; // ⚠ Always not-null when status = VALIDATED or later
   // what is wrong with comments like this? 🤔 the people don't abide by them or don't care about them, they don't mind them
   public void validate(String currentUser) {
-    status.requireState(DRAFT);
+    status.shouldBeOneOf(DRAFT);
     status = Status.VALIDATED;
     validatedBy = Objects.requireNonNull(currentUser);
   }
   public void activate() {
-    status.requireState(Status.VALIDATED);
+    status.shouldBeOneOf(Status.VALIDATED);
     status = Status.ACTIVE;
   }
 
