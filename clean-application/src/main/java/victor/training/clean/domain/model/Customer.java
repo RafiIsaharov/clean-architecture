@@ -1,6 +1,5 @@
 package victor.training.clean.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -49,6 +48,14 @@ public class Customer {
 
   public Optional<String> getLegalEntityCode() {
     return Optional.ofNullable(legalEntityCode);
+  }
+
+  public boolean canReturnOrders() {
+    return goldMember || isIndividual();
+  }
+
+  private boolean isIndividual() {
+    return legalEntityCode == null;
   }
 
   public enum Status {
