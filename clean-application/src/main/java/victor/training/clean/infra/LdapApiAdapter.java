@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 // which is an adapter?  1. NotificationService 2. LdapApiAdapter  3. LdapApi
 // LdapApiAdapter is an adapter design pattern
 import victor.training.clean.domain.service.User;
+import victor.training.clean.domain.service.UserFetcher;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +22,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class LdapApiAdapter {
+public class LdapApiAdapter implements UserFetcher {
   private final LdapApi ldapApi;
 
 
+  @Override
   public User fetchUser(String usernamePart) {
     LdapUserDto ldapUserDto = fetchUserFromLdap(usernamePart);
     if (ldapUserDto.getUn().startsWith("s")) {
