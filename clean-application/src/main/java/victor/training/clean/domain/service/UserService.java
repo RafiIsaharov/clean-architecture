@@ -3,6 +3,7 @@ package victor.training.clean.domain.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+// ⚠️ INFRA should not be in domain package "DOMAIN" should not depend on "INFRASTRUCTURE"
 import victor.training.clean.infra.LdapApi;
 import victor.training.clean.infra.LdapUserDto;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 @Service
 public class UserService {
   private final LdapApi ldapApi;
+
 
   public User fetchUser(String usernamePart) {
     LdapUserDto ldapUserDto = fetchUserFromLdap(usernamePart);
