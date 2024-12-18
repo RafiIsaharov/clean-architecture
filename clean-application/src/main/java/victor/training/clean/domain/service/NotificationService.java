@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service;
 import victor.training.clean.domain.model.Customer;
 import victor.training.clean.domain.model.Email;
 import victor.training.clean.infra.EmailSender;
+import victor.training.clean.infra.LdapApiAdapter;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class NotificationService {
   private final EmailSender emailSender;
-  private final UserService userService;
+  private final LdapApiAdapter ldapApiAdapter;
 
   // Core application logic, my Zen garden 🧘☯☮️
   public void sendWelcomeEmail(Customer customer, String usernamePart) {
@@ -23,7 +24,7 @@ public class NotificationService {
 //    get = in memory stuff,
 //    fetch = from the outside API
 //    find = from the database
-    User user = userService.fetchUser(usernamePart);
+    User user = ldapApiAdapter.fetchUser(usernamePart);
 
     Email email = Email.builder()
         .from("noreply@cleanapp.com")
@@ -38,7 +39,7 @@ public class NotificationService {
   }
 
   public void sendGoldBenefitsEmail(Customer customer, String usernamePart) {
-    User user = userService.fetchUser(usernamePart);
+    User user = ldapApiAdapter.fetchUser(usernamePart);
     String returnOrdersStr = customer.canReturnOrders() ? "You are allowed to return orders\n" : "";
     Email email = Email.builder()
         .from("noreply@cleanapp.com")

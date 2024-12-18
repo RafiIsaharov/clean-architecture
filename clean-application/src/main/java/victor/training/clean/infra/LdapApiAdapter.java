@@ -1,12 +1,14 @@
-package victor.training.clean.domain.service;
+package victor.training.clean.infra;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 // ⚠️ INFRA should not be in domain package "DOMAIN" should not depend on "INFRASTRUCTURE"
 // this class generated from the external api in infra package located in target folder by using plugin with the mvn clean install command
-import victor.training.clean.infra.LdapApi;
-import victor.training.clean.infra.LdapUserDto;
+// right now we have a dependency injection from outside the domain package, and we need to convert it inverse injection
+// which is an adapter?  1. NotificationService 2. LdapApiAdapter  3. LdapApi
+// LdapApiAdapter is an adapter design pattern
+import victor.training.clean.domain.service.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +17,11 @@ import java.util.Optional;
 //So you create the structure you map in front of you to the structure so that it's all clear,
 // and then you start it as a method and then as a separate class.
 // Of course the class will not stay here once it's done, and it compiles, you need to move class to a different place.
+// = Adapter design pattern = protects your core from outside world
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class UserService {
+public class LdapApiAdapter {
   private final LdapApi ldapApi;
 
 
