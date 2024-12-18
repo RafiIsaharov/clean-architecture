@@ -36,9 +36,9 @@ public class ArchitectureTest {
 
     assertThat(rule.evaluate(allProjectClasses).getFailureReport().getDetails())
 //        .hasSize(14); //  t0 initial 😭 Expected size: 0 but was: 14
-        .hasSize(4); // next sprint
+//        .hasSize(4); // next sprint
 //        .hasSize(50); // 3 months later
-//        .hasSize(0); // end 🍾
+        .hasSize(0); // end 🍾
   }
 
   @Test

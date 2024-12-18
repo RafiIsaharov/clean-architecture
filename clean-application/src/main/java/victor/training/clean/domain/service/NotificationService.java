@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import victor.training.clean.domain.model.Customer;
 import victor.training.clean.domain.model.Email;
-import victor.training.clean.infra.EmailSender;
 
 @RequiredArgsConstructor
 @Slf4j
