@@ -18,3 +18,15 @@ At runtime , a Dependency Injection framework will inject an instance of the imp
 --Domain Service should not know about the implementation of the interface adapter, it should only know about the interface adapter.
 Infrastructure = "Anti-corruption layer" (adapter) between the domain and the outside world (calls and maps data)
 ![img.png](img.png)
+Menu -> Code -> Analyze Code -> Dependency Structure Matrix - DSM (shows the dependencies between the packages)
+--The DSM is a tool that helps you understand the dependencies between the packages in your project. It shows you the dependencies between the packages in a matrix format. 
+The rows and columns of the matrix represent the packages in your project. 
+The cells of the matrix represent the dependencies between the packages. 
+![img_1.png](img_1.png)
+Find Cycle Dependencies 
+APP -> DOM (10)-> DOM -> APP (200>)
+red = bad victim (who depend on red?)  the domain should not depend on the app
+![img_2.png](img_2.png)
+repository is depended on app 10 times
+repository works with DTOS !! WTF !  
+![img_3.png](img_3.png)
