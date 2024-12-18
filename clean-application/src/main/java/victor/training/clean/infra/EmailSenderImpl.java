@@ -7,7 +7,8 @@ import victor.training.clean.domain.service.EmailSender;
 
 @Slf4j
 @Service
-public class EmailSenderImpl implements EmailSender {
+//EmailSenderImpl bad name.
+public class EmailSenderImpl implements  EmailSender {
    @Override
    public void sendEmail(Email email) {
       // Imagine 20 lines of infra code to:
