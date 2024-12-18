@@ -12,6 +12,7 @@ find = from the database
 --CODEOWNERS file in the root of the repo to define who should review the PRs
 
 Day 2 - Dependency Inversion Principle
+--The Dependency Inversion Principle (DIP) is a software design principle that states that high-level modules should not depend on low-level modules. Both should depend on abstractions.
 Protecting the domain using technique (enforce boundary) that nothing from outside (infra) would ever be referenced directly from inside.
 Domain starts to become Agnostic
 At runtime , a Dependency Injection framework will inject an instance of the implementation of the interface adapter into the constructor of the domain service.
@@ -30,3 +31,12 @@ red = bad victim (who depend on red?)  the domain should not depend on the app
 repository is depended on app 10 times
 repository works with DTOS !! WTF !  
 ![img_3.png](img_3.png)
+Enforcing Code Dependencies
+--ArchUnit is a Java library for checking the architecture of your Java code. It's a tool that helps you enforce the architecture of your code.
+![img_4.png](img_4.png)
+We have two Modules clean-application and clean-domain (empty)
+--We have a rule that the domain should not depend on the application
+--so the domain pom.xml should not have a dependency on the application,but the application can have a dependency on the domain
+![img_5.png](img_5.png)
+compiler error when moving out the domain to new model  
+![img_6.png](img_6.png)
