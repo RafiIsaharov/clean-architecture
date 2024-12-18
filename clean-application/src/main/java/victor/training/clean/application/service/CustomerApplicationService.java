@@ -1,8 +1,14 @@
 package victor.training.clean.application.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+import victor.training.clean.application.controller.CustomerController;
 import victor.training.clean.application.dto.CustomerDto;
 import victor.training.clean.application.dto.CustomerSearchCriteria;
 import victor.training.clean.application.dto.CustomerSearchResult;
@@ -29,6 +35,8 @@ public class CustomerApplicationService {
   private final CustomerSearchQuery customerSearchQuery;
   private final InsuranceService insuranceService;
   private final AnafClient anafClient;
+  private final ObjectMapper jacksonObjectMapper;
+
 
   public List<CustomerSearchResult> search(CustomerSearchCriteria searchCriteria) {
     return customerSearchQuery.search(searchCriteria);
@@ -134,5 +142,13 @@ public class CustomerApplicationService {
 
   private void auditRemovedGoldMember(String customerName, String reason) {
     log.info("Kafka.send ( {name:" + customerName + ", reason:" + reason + "} )");
+  }
+
+  public void patchUpdate(long id, JsonPatch patch, CustomerController customerController) throws JsonPatchException, JsonProcessingException {
+    Customer oldCustomer = customerRepo.findById(id).orElseThrow();
+    JsonNode oldJson = jacksonObjectMapper.convertValue(oldCustomer, JsonNode.class);
+    JsonNode patchedJson = patch.apply(oldJson);
+    Customer patchedCustomer = jacksonObjectMapper.treeToValue(patchedJson, Customer.class);
+    customerRepo.save(patchedCustomer);
   }
 }

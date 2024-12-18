@@ -45,3 +45,4 @@ using separate build units (in eg a multi-module maven/gradle proj) to enforce b
 + code fails to compile on violations
 + everyone understands= clear structs
 - Binary decision (all or nothing). Impossible to use if having 1000+ violations of that boundary you want to enforce in legacy code
+
