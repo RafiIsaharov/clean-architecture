@@ -39,12 +39,12 @@ public class NotificationService {
         .build();
 
 
-    // ⚠️ Unguarded nullable fields can cause NPE in other places TODO return Optional<> from getter
-    if (user.email().isPresent()) {
-      // ⚠️ Logic repeated in other places TODO move logic to the new class
-      String contact = user.fullName() + " <" + user.email().get().toLowerCase() + ">";
-      email.getCc().add(contact);
-    }
+//    if (user.email().isPresent()) {
+//      String contact = user.asContact();
+//      email.getCc().add(contact);
+//    }
+
+    user.asContact().ifPresent(email.getCc()::add);
 
     emailSender.sendEmail(email);
 
@@ -56,7 +56,9 @@ public class NotificationService {
 
   private User fetchUser(String usernamePart) {
     LdapUserDto ldapUserDto = fetchUserFromLdap(usernamePart);
-    normalize(ldapUserDto);
+    if (ldapUserDto.getUn().startsWith("s")) {
+      ldapUserDto.setUn("system"); // ⚠️ dirty hack: replace any system user with 'system'
+    }
     return new User(ldapUserDto.getUn(), Optional.ofNullable(ldapUserDto.getWorkEmail()), ldapUserDto.getFname() + " " + ldapUserDto.getLname().toUpperCase());
   }
 
@@ -70,14 +72,8 @@ public class NotificationService {
     return dtoList.get(0);
   }
 
-  private void normalize(LdapUserDto ldapUserDto) {
-    if (ldapUserDto.getUn().startsWith("s")) {
-      ldapUserDto.setUn("system"); // ⚠️ dirty hack: replace any system user with 'system'
-    }
-  }
-
   public void sendGoldBenefitsEmail(Customer customer, String usernamePart) {
-    LdapUserDto userLdapDto = fetchUserFromLdap(usernamePart);
+    User user = fetchUser(usernamePart);
 
       String returnOrdersStr = customer.canReturnOrders() ? "You are allowed to return orders\n" : "";
 
@@ -86,19 +82,14 @@ public class NotificationService {
         .to(customer.getEmail())
         .subject("Welcome to our Gold membership!")
         .body(returnOrdersStr +
-              "Yours sincerely, " + userLdapDto.getFname() + " " + userLdapDto.getLname().toUpperCase())
+              "Yours sincerely, " + user.fullName())
         .build();
-//Secondly, the same kind of logic appears somewhere else in this file.
-//It's very similar. It's over here
-    String contact = userLdapDto.getFname() + " " + userLdapDto.getLname().toUpperCase()
-            //    For example, here I'm running the risk of hitting one point or exception
-            //    because the work e-mail is missing in the detail. coming from the outside.
-            //    there is potentially still a null pointer exception waiting to happen
-               + " <" + userLdapDto.getWorkEmail().toLowerCase() + ">";
-    email.getCc().add(contact);
-
+//    if(user.email().isPresent()) {
+//      String contact = user.asContact();
+//      email.getCc().add(contact);
+//    }
+    user.asContact().ifPresent(email.getCc()::add);
     emailSender.sendEmail(email);
   }
-
 
 }
