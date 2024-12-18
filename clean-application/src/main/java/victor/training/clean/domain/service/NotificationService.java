@@ -12,7 +12,7 @@ import victor.training.clean.infra.EmailSender;
 @Service
 public class NotificationService {
   private final EmailSender emailSender;
-  private final LdapUserService ldapUserService;
+  private final UserService userService;
 
   // Core application logic, my Zen garden 🧘☯☮️
   public void sendWelcomeEmail(Customer customer, String usernamePart) {
@@ -23,8 +23,7 @@ public class NotificationService {
 //    get = in memory stuff,
 //    fetch = from the outside API
 //    find = from the database
-    User user = ldapUserService.fetchUser(usernamePart);
-    // ⚠️ Data mapping mixed with core logic TODO pull it earlier
+    User user = userService.fetchUser(usernamePart);
 
     Email email = Email.builder()
         .from("noreply@cleanapp.com")
@@ -33,29 +32,14 @@ public class NotificationService {
         .body("Dear " + customer.getName() + ", welcome! Sincerely, " + user.fullName())
         .build();
 
-
-//    if (user.email().isPresent()) {
-//      String contact = user.asContact();
-//      email.getCc().add(contact);
-//    }
-
     user.asContact().ifPresent(email.getCc()::add);
-
     emailSender.sendEmail(email);
-
-    // ⚠️ Swap this line with next one to cause a bug (=TEMPORAL COUPLING) TODO make immutable💚
-
-    // ⚠️ 'un' = bad name TODO in my ubiquitous language 'un' means 'username'
     customer.setCreatedByUsername(user.username());
   }
 
-
-
   public void sendGoldBenefitsEmail(Customer customer, String usernamePart) {
-    User user = ldapUserService.fetchUser(usernamePart);
-
-      String returnOrdersStr = customer.canReturnOrders() ? "You are allowed to return orders\n" : "";
-
+    User user = userService.fetchUser(usernamePart);
+    String returnOrdersStr = customer.canReturnOrders() ? "You are allowed to return orders\n" : "";
     Email email = Email.builder()
         .from("noreply@cleanapp.com")
         .to(customer.getEmail())
@@ -63,10 +47,6 @@ public class NotificationService {
         .body(returnOrdersStr +
               "Yours sincerely, " + user.fullName())
         .build();
-//    if(user.email().isPresent()) {
-//      String contact = user.asContact();
-//      email.getCc().add(contact);
-//    }
     user.asContact().ifPresent(email.getCc()::add);
     emailSender.sendEmail(email);
   }
