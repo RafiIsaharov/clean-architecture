@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class NotificationService {
   private final EmailSender emailSender;
-  private final LdapApi ldapApi;
+  private final LdapUserService ldapUserService;
 
   // Core application logic, my Zen garden 🧘☯☮️
   public void sendWelcomeEmail(Customer customer, String usernamePart) {
@@ -28,7 +28,7 @@ public class NotificationService {
 //    get = in memory stuff,
 //    fetch = from the outside API
 //    find = from the database
-    User user = fetchUser(usernamePart);
+    User user = ldapUserService.fetchUser(usernamePart);
     // ⚠️ Data mapping mixed with core logic TODO pull it earlier
 
     Email email = Email.builder()
@@ -54,26 +54,10 @@ public class NotificationService {
     customer.setCreatedByUsername(user.username());
   }
 
-  private User fetchUser(String usernamePart) {
-    LdapUserDto ldapUserDto = fetchUserFromLdap(usernamePart);
-    if (ldapUserDto.getUn().startsWith("s")) {
-      ldapUserDto.setUn("system"); // ⚠️ dirty hack: replace any system user with 'system'
-    }
-    return new User(ldapUserDto.getUn(), Optional.ofNullable(ldapUserDto.getWorkEmail()), ldapUserDto.getFname() + " " + ldapUserDto.getLname().toUpperCase());
-  }
 
-  private LdapUserDto fetchUserFromLdap(String usernamePart) {
-    List<LdapUserDto> dtoList = ldapApi.searchUsingGET(usernamePart.toUpperCase(), null, null);
-
-    if (dtoList.size() != 1) {
-      throw new IllegalArgumentException("Search for username='" + usernamePart + "' did not return a single result: " + dtoList);
-    }
-
-    return dtoList.get(0);
-  }
 
   public void sendGoldBenefitsEmail(Customer customer, String usernamePart) {
-    User user = fetchUser(usernamePart);
+    User user = ldapUserService.fetchUser(usernamePart);
 
       String returnOrdersStr = customer.canReturnOrders() ? "You are allowed to return orders\n" : "";
 
@@ -92,4 +76,30 @@ public class NotificationService {
     emailSender.sendEmail(email);
   }
 
+}
+//So you create the structure you map in front of you to the structure so that it's all clear,
+// and then you start it as a method and then as a separate class.
+// Of course the class will not stay here once it's done, and it compiles, you need to move class to a different place.
+@RequiredArgsConstructor
+@Slf4j
+@Service
+class LdapUserService {
+  private final LdapApi ldapApi;
+
+  public User fetchUser(String usernamePart) {
+    LdapUserDto ldapUserDto = fetchUserFromLdap(usernamePart);
+    if (ldapUserDto.getUn().startsWith("s")) {
+      ldapUserDto.setUn("system"); // ⚠️ dirty hack: replace any system user with 'system'
+    }
+    return new User(ldapUserDto.getUn(), Optional.ofNullable(ldapUserDto.getWorkEmail()), ldapUserDto.getFname() + " " + ldapUserDto.getLname().toUpperCase());
+  }
+
+  private LdapUserDto fetchUserFromLdap(String usernamePart) {
+    List<LdapUserDto> dtoList = ldapApi.searchUsingGET(usernamePart.toUpperCase(), null, null);
+
+    if (dtoList.size() != 1) {
+      throw new IllegalArgumentException("Search for username='" + usernamePart + "' did not return a single result: " + dtoList);
+    }
+    return dtoList.get(0);
+  }
 }
