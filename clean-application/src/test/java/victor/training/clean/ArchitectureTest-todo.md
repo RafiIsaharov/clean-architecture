@@ -18,6 +18,7 @@
 </dependency>
 ```
 
+
 ### Example Rules
 - Repository should not depend on Service or Controller (=cycle)
 - Controller should not depend on Repository
