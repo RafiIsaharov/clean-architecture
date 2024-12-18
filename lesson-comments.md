@@ -40,3 +40,8 @@ We have two Modules clean-application and clean-domain (empty)
 ![img_5.png](img_5.png)
 compiler error when moving out the domain to new model  
 ![img_6.png](img_6.png)
+using separate build units (in eg a multi-module maven/gradle proj) to enforce boundaries between logical components.
+= traditional way
++ code fails to compile on violations
++ everyone understands= clear structs
+- Binary decision (all or nothing). Impossible to use if having 1000+ violations of that boundary you want to enforce in legacy code
